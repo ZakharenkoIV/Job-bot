@@ -1,18 +1,18 @@
 package ru.example.jobbot.component;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.example.jobbot.config.TelegramBotProperties;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final String botUsername;
 
-    public TelegramBot(@Value("${telegram.bot.token}") String botToken, @Value("${telegram.bot.username}") String botUsername) {
-        super(botToken);
-        this.botUsername = botUsername;
+    public TelegramBot(TelegramBotProperties properties) {
+        super(properties.getToken());
+        this.botUsername = properties.getUsername();
     }
 
     @Override
