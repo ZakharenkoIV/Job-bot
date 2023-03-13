@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: classpath:db/changelog/001_create_users__table.sql
+  - include:
+      file: classpath:db/changelog/002_create_subscriptions_table.sql
+  - include:
+      file: classpath:db/changelog/003_create_jobs_table.sql
