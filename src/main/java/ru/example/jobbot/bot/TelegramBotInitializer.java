@@ -20,15 +20,12 @@ public class TelegramBotInitializer {
     }
 
     public void botConnect() {
-        DefaultBotSession botSession = null;
         try {
-            botSession = new DefaultBotSession();
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(telegramBot);
             log.info("Бот зарегистрирован и готов к получению сообщений.");
         } catch (TelegramApiException e) {
             log.error("Ошибка при регистрации бота: {}", e.getMessage());
-            botSession.stop();
         }
     }
 }
