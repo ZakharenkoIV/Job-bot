@@ -1,6 +1,7 @@
 package ru.example.jobbot.service.cache;
 
 import org.springframework.stereotype.Service;
+import ru.example.jobbot.repository.UserRepository;
 
 import java.util.HashSet;
 
@@ -9,8 +10,8 @@ public class HashSetCacheService implements CacheService {
 
     private final HashSet<Long> cache;
 
-    public HashSetCacheService() {
-        this.cache = new HashSet<>();
+    public HashSetCacheService(UserRepository users) {
+        cache = new HashSet<>(users.getAllTelegramIds());
     }
 
     @Override
