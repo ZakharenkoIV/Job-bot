@@ -12,7 +12,7 @@ public abstract class AbstractTelegramCommandHandler implements TelegramCommandH
     @Override
     public void handleCommand(TelegramBot bot, Update update) {
         long chatId = update.getMessage().getChatId();
-        SendMessage sendMessage = createSendMessage(chatId);
+        SendMessage sendMessage = createSendMessage(update);
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
@@ -20,5 +20,5 @@ public abstract class AbstractTelegramCommandHandler implements TelegramCommandH
         }
     }
 
-    abstract SendMessage createSendMessage(long chatId);
+    abstract SendMessage createSendMessage(Update update);
 }

@@ -39,7 +39,7 @@ public class TelegramBot extends DefaultAbsSender implements LongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Optional.ofNullable(extractMessage(update))
+        Optional.ofNullable(extractText(update))
                 .map(commandHandlers::get)
                 .ifPresent(handler -> handler.handleCommand(this, update));
     }
@@ -48,7 +48,7 @@ public class TelegramBot extends DefaultAbsSender implements LongPollingBot {
     public void clearWebhook() {
     }
 
-    private String extractMessage(Update update) {
+    private String extractText(Update update) {
         return Optional.ofNullable(update)
                 .filter(Update::hasMessage)
                 .map(Update::getMessage)
