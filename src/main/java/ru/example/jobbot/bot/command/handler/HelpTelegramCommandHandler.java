@@ -1,4 +1,4 @@
-package ru.example.jobbot.bot.command;
+package ru.example.jobbot.bot.command.handler;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -18,5 +18,15 @@ public class HelpTelegramCommandHandler extends AbstractTelegramCommandHandler {
     @Override
     public String getCommandName() {
         return "/help";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Помощь";
+    }
+
+    @Override
+    public String getScope() {
+        return "public";
     }
 }

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.example.jobbot.entity.User;
+import ru.example.jobbot.entity.TelegramUser;
 import ru.example.jobbot.repository.UserRepository;
 
 @Slf4j
@@ -19,11 +19,11 @@ public class UserService {
     }
 
     @Transactional
-    public void saveUser(User user) {
-        userRepository.save(user);
+    public void saveUser(TelegramUser telegramUser) {
+        userRepository.save(telegramUser);
     }
 
-    public User getUser(Long telegramId) {
+    public TelegramUser getUser(Long telegramId) {
         return userRepository.getUserByTelegramId(telegramId);
     }
 }

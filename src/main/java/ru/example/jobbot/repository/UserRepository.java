@@ -3,15 +3,15 @@ package ru.example.jobbot.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.example.jobbot.entity.User;
+import ru.example.jobbot.entity.TelegramUser;
 
 import java.util.Set;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<TelegramUser, Long> {
 
-    User getUserByTelegramId(Long telegramId);
+    TelegramUser getUserByTelegramId(Long telegramId);
 
-    @Query("SELECT u.telegramId FROM User u")
+    @Query("SELECT u.telegramId FROM TelegramUser u")
     Set<Long> getAllTelegramIds();
 }

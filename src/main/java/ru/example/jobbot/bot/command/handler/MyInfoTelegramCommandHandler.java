@@ -1,4 +1,4 @@
-package ru.example.jobbot.bot.command;
+package ru.example.jobbot.bot.command.handler;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,7 +19,17 @@ public class MyInfoTelegramCommandHandler extends AbstractTelegramCommandHandler
 
     @Override
     public String getCommandName() {
-        return "/myInfo";
+        return "/my_info";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Информация о себе";
+    }
+
+    @Override
+    public String getScope() {
+        return "private";
     }
 
     private String getInfoAboutUser(Update update) {

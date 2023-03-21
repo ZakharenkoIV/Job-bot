@@ -1,6 +1,5 @@
 package ru.example.jobbot.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
+public class TelegramUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

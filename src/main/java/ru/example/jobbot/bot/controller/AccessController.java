@@ -14,4 +14,12 @@ public class AccessController {
     public boolean checkAccess(long telegramId) {
         return cacheService.isTelegramIdExist(telegramId);
     }
+
+    public boolean checkRegisterChatId(Long chatId) {
+        return cacheService.isChatIdExist(chatId);
+    }
+
+    public void addChatId(Long chatId) {
+        cacheService.addChatId( chatId);
+    }
 }
