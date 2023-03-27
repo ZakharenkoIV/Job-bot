@@ -24,8 +24,8 @@ public class RegRequestInlineKeyboardMarkup {
 
     public InlineKeyboardMarkup getInlineKeyboardMarkup(TelegramUser user) {
         List<InlineKeyboardButton> row = new ArrayList<>();
-        row.add(addButton.getInlineKeyboardButton(user.getTelegramChatId()));
-        row.add(ignoreButton.getInlineKeyboardButton(user.getTelegramChatId()));
+        row.add(addButton.getInlineKeyboardButton(user));
+        row.add(ignoreButton.getInlineKeyboardButton(user));
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         markup.setKeyboard(Collections.singletonList(row));
         return markup;

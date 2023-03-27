@@ -108,4 +108,14 @@ public class HashSetCacheService implements CacheService {
         }
         return false;
     }
+
+    @Override
+    public TelegramUser findRegisteringUser(Long newTelegramUserId) {
+        return registrationList.get(newTelegramUserId);
+    }
+
+    @Override
+    public void deleteChatByTelegramId(Long chatId) {
+        chatIds.remove(chatId);
+    }
 }

@@ -12,6 +12,7 @@ import ru.example.jobbot.bot.TelegramBot;
 import ru.example.jobbot.bot.command.handler.StartTelegramCommandHandler;
 import ru.example.jobbot.bot.keyboard.button.handler.ButtonHandler;
 import ru.example.jobbot.entity.TelegramUser;
+import ru.example.jobbot.service.LocalizationService;
 import ru.example.jobbot.service.TelegramMessageService;
 import ru.example.jobbot.service.UserService;
 import ru.example.jobbot.service.cache.CacheService;
@@ -28,14 +29,20 @@ public class RegRequestAddInlineButtonHandler implements ButtonHandler {
     private final UserService userService;
     private final CacheService cacheService;
     private final TelegramMessageService messageService;
+    private final LocalizationService l10nService;
 
-    public RegRequestAddInlineButtonHandler(UserService userService, CacheService cacheService, TelegramMessageService messageService, StartTelegramCommandHandler startCommand) {
+    public RegRequestAddInlineButtonHandler(UserService userService,
+                                            CacheService cacheService,
+                                            TelegramMessageService messageService,
+                                            StartTelegramCommandHandler startCommand,
+                                            LocalizationService l10nService) {
         this.buttonHandlerName = "button_reg_add";
         this.accessLevel = AccessLevel.ADMIN;
         this.userService = userService;
         this.cacheService = cacheService;
         this.messageService = messageService;
         this.bindingCommandName = startCommand.getCommandName();
+        this.l10nService = l10nService;
     }
 
     @Override
@@ -52,24 +59,26 @@ public class RegRequestAddInlineButtonHandler implements ButtonHandler {
     public void handleButtonPress(TelegramBot bot, Update update, TelegramUser user) {
         Long newTelegramUserId = Long.parseLong(new JSONObject(update.getCallbackQuery().getData()).get("user_id").toString());
         deleteRequestMessageFromAdmin(bot, newTelegramUserId);
-        saveNewUser(newTelegramUserId);
-        deletePreviousMessageFromUser(bot, newTelegramUserId);
-        sendSuccessMessage(bot, newTelegramUserId);
+        TelegramUser newUser = saveNewUser(newTelegramUserId);
+        deletePreviousMessageFromUser(bot, newUser.getTelegramId());
+        sendSuccessMessage(bot, newUser);
     }
 
-    private void sendSuccessMessage(TelegramBot bot, Long newTelegramUserId) {
-        String accessGrantedText = String.format("Доступ разрешён.%nУдачного поиска работы!");
-        sendMessageToUser(bot, newTelegramUserId, accessGrantedText);
+    private void sendSuccessMessage(TelegramBot bot, TelegramUser newUser) {
+        String accessGrantedText = l10nService.getLocalizedMessage("reg_handler_access_granted_success_text", newUser.getLanguageCode());
+        sendMessageToUser(bot, newUser.getTelegramId(), accessGrantedText);
 
-        String updateCommandsText = "Для обновления команд отправьте любое сообщение";
-        sendDelayedMessageToUser(bot, newTelegramUserId, updateCommandsText);
+        String updateCommandsText = l10nService.getLocalizedMessage(
+                "reg_handler_update_commands_send_any_message_text", newUser.getLanguageCode());
+        sendDelayedMessageToUser(bot, newUser.getTelegramId(), updateCommandsText);
     }
 
-    private void saveNewUser(Long newTelegramUserId) {
+    private TelegramUser saveNewUser(Long newTelegramUserId) {
         TelegramUser newUser = cacheService.removeTelegramUserFromRegistrationMap(newTelegramUserId);
-        newUser.setAccessLevel(AccessLevel.PUBLIC + ", " +  AccessLevel.PRIVATE);
+        newUser.setAccessLevel(AccessLevel.PUBLIC + ", " + AccessLevel.PRIVATE);
         cacheService.removeChatId(newTelegramUserId);
         userService.saveUser(newUser);
+        return newUser;
     }
 
     private void deletePreviousMessageFromUser(TelegramBot bot, Long newTelegramUserId) {

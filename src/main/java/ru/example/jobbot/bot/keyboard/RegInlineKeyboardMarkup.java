@@ -17,9 +17,9 @@ public class RegInlineKeyboardMarkup {
         this.regButton = regButton;
     }
 
-    public InlineKeyboardMarkup getInlineKeyboardMarkup() {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(String languageCode) {
         List<InlineKeyboardButton> row = new ArrayList<>();
-        row.add(regButton.getInlineKeyboardButton());
+        row.add(regButton.getInlineKeyboardButton(languageCode));
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         markup.setKeyboard(Collections.singletonList(row));
         return markup;

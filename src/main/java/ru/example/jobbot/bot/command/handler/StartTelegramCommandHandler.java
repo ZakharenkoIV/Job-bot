@@ -6,25 +6,37 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.example.jobbot.bot.AccessLevel;
 import ru.example.jobbot.bot.keyboard.RegInlineKeyboardMarkup;
+import ru.example.jobbot.service.LocalizationService;
 import ru.example.jobbot.service.TelegramMessageService;
 import ru.example.jobbot.service.cache.CacheService;
 
 @Component
 public class StartTelegramCommandHandler extends AbstractTelegramCommandHandler {
 
-    private final InlineKeyboardMarkup regKeyboard;
+    private final RegInlineKeyboardMarkup keyboard;
+    private final LocalizationService l10nService;
 
-    public StartTelegramCommandHandler(RegInlineKeyboardMarkup keyboard, CacheService cacheService, TelegramMessageService messageService) {
-        super("/start", "Знакомство", AccessLevel.REG, cacheService, messageService);
-        this.regKeyboard = keyboard.getInlineKeyboardMarkup();
+    public StartTelegramCommandHandler(RegInlineKeyboardMarkup keyboard,
+                                       CacheService cacheService,
+                                       TelegramMessageService messageService,
+                                       LocalizationService l10nService) {
+        super(
+                "/start",
+                AccessLevel.REG,
+                cacheService,
+                messageService
+        );
+        this.keyboard = keyboard;
+        this.l10nService = l10nService;
     }
 
     @Override
     SendMessage createSendMessage(Update update) {
+        String languageCode = update.getMessage().getFrom().getLanguageCode();
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
-        sendMessage.setText("Привет! Это начало работы с ботом.");
-        sendMessage.setReplyMarkup(regKeyboard);
+        sendMessage.setText(l10nService.getLocalizedMessage("start_command_hello_text", languageCode));
+        sendMessage.setReplyMarkup(keyboard.getInlineKeyboardMarkup(languageCode));
         return sendMessage;
     }
 
@@ -34,8 +46,8 @@ public class StartTelegramCommandHandler extends AbstractTelegramCommandHandler 
     }
 
     @Override
-    public String getDescription() {
-        return super.getDescription();
+    public String getDescription(String languageCode) {
+        return l10nService.getLocalizedMessage("start_command", languageCode);
     }
 
     @Override

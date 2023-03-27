@@ -14,15 +14,13 @@ import java.util.Optional;
 public abstract class AbstractTelegramCommandHandler implements TelegramCommandHandler {
 
     private final String commandName;
-    private final String description;
     private final String accessLevel;
     private final CacheService cacheService;
     private final TelegramMessageService messageService;
 
 
-    protected AbstractTelegramCommandHandler(String commandName, String description, String accessLevel, CacheService cacheService, TelegramMessageService messageService) {
+    protected AbstractTelegramCommandHandler(String commandName, String accessLevel, CacheService cacheService, TelegramMessageService messageService) {
         this.commandName = commandName;
-        this.description = description;
         this.accessLevel = accessLevel;
         this.cacheService = cacheService;
         this.messageService = messageService;
@@ -48,11 +46,6 @@ public abstract class AbstractTelegramCommandHandler implements TelegramCommandH
     @Override
     public String getCommandName() {
         return commandName;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
     }
 
     @Override

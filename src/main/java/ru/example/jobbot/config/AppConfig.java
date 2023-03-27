@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -15,10 +17,7 @@ import ru.example.jobbot.bot.keyboard.button.Button;
 import ru.example.jobbot.bot.keyboard.button.handler.ButtonHandler;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Configuration
@@ -72,5 +71,17 @@ public class AppConfig {
                     .findAny().orElseThrow());
         }
         return buttonHandlersMap;
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames(
+                "i18n/bot/commands/commands_name_messages",
+                "i18n/bot/commands/commands_message_text_messages"
+        );
+        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setDefaultLocale(new Locale("ru", "RU"));
+        return messageSource;
     }
 }

@@ -12,6 +12,7 @@ import ru.example.jobbot.bot.command.handler.StartTelegramCommandHandler;
 import ru.example.jobbot.bot.keyboard.RegRequestInlineKeyboardMarkup;
 import ru.example.jobbot.bot.keyboard.button.handler.ButtonHandler;
 import ru.example.jobbot.entity.TelegramUser;
+import ru.example.jobbot.service.LocalizationService;
 import ru.example.jobbot.service.TelegramMessageService;
 import ru.example.jobbot.service.cache.CacheService;
 
@@ -27,14 +28,20 @@ public class RegInlineButtonHandler implements ButtonHandler {
     private final CacheService cacheService;
     private final String bindingCommandName;
     private final TelegramMessageService messageService;
+    private final LocalizationService l10nService;
 
-    public RegInlineButtonHandler(RegRequestInlineKeyboardMarkup keyboardMarkup, CacheService cacheService, StartTelegramCommandHandler startCommand, TelegramMessageService messageService) {
+    public RegInlineButtonHandler(RegRequestInlineKeyboardMarkup keyboardMarkup,
+                                  CacheService cacheService,
+                                  StartTelegramCommandHandler startCommand,
+                                  TelegramMessageService messageService,
+                                  LocalizationService l10nService) {
         this.keyboardMarkup = keyboardMarkup;
         this.buttonHandlerName = "button_reg";
         this.accessLevel = AccessLevel.REG;
         this.cacheService = cacheService;
         this.bindingCommandName = startCommand.getCommandName();
         this.messageService = messageService;
+        this.l10nService = l10nService;
     }
 
     @Override
@@ -52,13 +59,14 @@ public class RegInlineButtonHandler implements ButtonHandler {
     private void sendMessageFromAdmin(TelegramBot bot, TelegramUser user) {
         SendMessage adminMessage = new SendMessage();
         StringJoiner textMessage = new StringJoiner(System.lineSeparator());
-        textMessage.add("Новый запрос доступа: ");
-        textMessage.add("Ник: " + user.getUserName());
-        textMessage.add("Имя: " + user.getFirstName());
-        textMessage.add("Фамилия: " + user.getLastName());
-        textMessage.add("ID: " + user.getTelegramId());
-        textMessage.add("Chat ID: " + user.getTelegramChatId());
-        textMessage.add("Язык: " + user.getLanguageCode());
+
+        textMessage.add(l10nService.getLocalizedMessage("reg_handler_new_access_request_text", "default") + ": ");
+        textMessage.add(l10nService.getLocalizedMessage("nickname_text", "default") + ": " + user.getUserName());
+        textMessage.add(l10nService.getLocalizedMessage("firstname_text", "default") + ": " + user.getFirstName());
+        textMessage.add(l10nService.getLocalizedMessage("lastname_text", "default") + ": " + user.getLastName());
+        textMessage.add(l10nService.getLocalizedMessage("telegramId_text", "default") + ": " + user.getTelegramId());
+        textMessage.add(l10nService.getLocalizedMessage("chatId_text", "default") + "Chat ID: " + user.getTelegramChatId());
+        textMessage.add(l10nService.getLocalizedMessage("languageDigit_text", "default") + ": " + user.getLanguageCode());
         adminMessage.setText(textMessage.toString());
         adminMessage.setChatId(Constants.ADMIN_ID);
         adminMessage.setReplyMarkup(keyboardMarkup.getInlineKeyboardMarkup(user));
@@ -69,7 +77,9 @@ public class RegInlineButtonHandler implements ButtonHandler {
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(user.getTelegramChatId());
         editMessage.setMessageId(cacheService.getSentMessageId(user.getTelegramChatId(), user.getAccessLevel(), bindingCommandName).orElseThrow());
-        editMessage.setText(String.format("Запрос отправлен администратору.%nМы сообщим вам о результатах сразу после рассмотрения"));
+        editMessage.setText(
+                l10nService.getLocalizedMessage("reg_handler_request_sent_to_admin_text", user.getLanguageCode())
+        );
         messageService.sendEditMessage(bot, editMessage);
     }
 

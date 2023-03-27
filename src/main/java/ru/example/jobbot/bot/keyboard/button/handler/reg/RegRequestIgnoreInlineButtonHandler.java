@@ -12,6 +12,7 @@ import ru.example.jobbot.bot.command.handler.StartTelegramCommandHandler;
 import ru.example.jobbot.bot.keyboard.AdminInlineKeyboardMarkup;
 import ru.example.jobbot.bot.keyboard.button.handler.ButtonHandler;
 import ru.example.jobbot.entity.TelegramUser;
+import ru.example.jobbot.service.LocalizationService;
 import ru.example.jobbot.service.TelegramMessageService;
 import ru.example.jobbot.service.cache.CacheService;
 
@@ -25,21 +26,28 @@ public class RegRequestIgnoreInlineButtonHandler implements ButtonHandler {
     private final TelegramMessageService messageService;
     private final CacheService cacheService;
     private final AdminInlineKeyboardMarkup adminMarkup;
+    private final LocalizationService l10nService;
 
-    public RegRequestIgnoreInlineButtonHandler(TelegramMessageService messageService, CacheService cacheService, StartTelegramCommandHandler startCommand, AdminInlineKeyboardMarkup adminMarkup) {
+    public RegRequestIgnoreInlineButtonHandler(TelegramMessageService messageService,
+                                               CacheService cacheService,
+                                               StartTelegramCommandHandler startCommand,
+                                               AdminInlineKeyboardMarkup adminMarkup,
+                                               LocalizationService l10nService
+    ) {
         this.messageService = messageService;
         this.cacheService = cacheService;
         this.adminMarkup = adminMarkup;
         this.buttonHandlerName = "button_reg_ignore";
         this.accessLevel = AccessLevel.ADMIN;
         this.bindingCommandName = startCommand.getCommandName();
+        this.l10nService = l10nService;
     }
 
     @Override
-    public void handleButtonPress(TelegramBot bot, Update update, TelegramUser user) {
+    public void handleButtonPress(TelegramBot bot, Update update, TelegramUser admin) {
         Long newTelegramUserId = Long.parseLong(new JSONObject(update.getCallbackQuery().getData()).get("user_id").toString());
         deletePreviousMessageFromUser(bot, newTelegramUserId);
-        sendIgnoreMessage(bot, user, newTelegramUserId);
+        sendIgnoreMessage(bot, admin, newTelegramUserId);
         deleteRequestMessageFromAdmin(bot, newTelegramUserId);
     }
 
@@ -53,11 +61,11 @@ public class RegRequestIgnoreInlineButtonHandler implements ButtonHandler {
         return accessLevel;
     }
 
-    private SendMessage createSendMessage(TelegramUser user, Long newTelegramUserId, String accessFailedText) {
+    private SendMessage createSendMessage(TelegramUser admin, TelegramUser newUser, String accessFailedText) {
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(newTelegramUserId);
+        sendMessage.setChatId(newUser.getTelegramId());
         sendMessage.setText(accessFailedText);
-        sendMessage.setReplyMarkup(adminMarkup.getInlineKeyboardMarkup(user));
+        sendMessage.setReplyMarkup(adminMarkup.getInlineKeyboardMarkup(admin, newUser.getLanguageCode()));
         return sendMessage;
     }
 
@@ -76,10 +84,10 @@ public class RegRequestIgnoreInlineButtonHandler implements ButtonHandler {
         );
     }
 
-    private void sendIgnoreMessage(TelegramBot bot, TelegramUser user, Long newTelegramUserId) {
-        String accessDeniedText = String.format("Доступ отклонён.%nОбратитесь к администратору.");
-        createSendMessage(user, newTelegramUserId, accessDeniedText);
-        SendMessage sendMessage = createSendMessage(user, newTelegramUserId, accessDeniedText);
+    private void sendIgnoreMessage(TelegramBot bot, TelegramUser admin, Long newTelegramUserId) {
+        TelegramUser newUser = cacheService.findRegisteringUser(newTelegramUserId);
+        String accessDeniedText = l10nService.getLocalizedMessage("reg_handler_access_denied_contact_admin_text", newUser.getLanguageCode());
+        SendMessage sendMessage = createSendMessage(admin, newUser, accessDeniedText);
         messageService.sendMessage(bot, newTelegramUserId, AccessLevel.PUBLIC, bindingCommandName, sendMessage);
     }
 }

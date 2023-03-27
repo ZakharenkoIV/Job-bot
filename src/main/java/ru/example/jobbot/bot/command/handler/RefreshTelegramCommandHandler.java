@@ -9,43 +9,34 @@ import ru.example.jobbot.service.TelegramMessageService;
 import ru.example.jobbot.service.cache.CacheService;
 
 @Component
-public class HelpTelegramCommandHandler extends AbstractTelegramCommandHandler {
-
+public class RefreshTelegramCommandHandler extends AbstractTelegramCommandHandler {
     private final LocalizationService l10nService;
+    private final CacheService cacheService;
 
-    public HelpTelegramCommandHandler(CacheService cacheService,
-                                      TelegramMessageService messageService,
-                                      LocalizationService l10nService) {
+    protected RefreshTelegramCommandHandler(CacheService cacheService,
+                                            TelegramMessageService messageService,
+                                            LocalizationService l10nService) {
         super(
-                "/help",
+                "/refresh",
                 AccessLevel.PUBLIC,
                 cacheService,
-                messageService
-        );
+                messageService);
         this.l10nService = l10nService;
+        this.cacheService = cacheService;
     }
 
     @Override
     SendMessage createSendMessage(Update update) {
+        cacheService.deleteChatByTelegramId(update.getMessage().getChatId());
         String languageCode = update.getMessage().getFrom().getLanguageCode();
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
-        sendMessage.setText(l10nService.getLocalizedMessage("help_command_text", languageCode));
+        sendMessage.setText(l10nService.getLocalizedMessage("refresh_command_success_text", languageCode));
         return sendMessage;
     }
 
     @Override
-    public String getCommandName() {
-        return super.getCommandName();
-    }
-
-    @Override
     public String getDescription(String languageCode) {
-        return l10nService.getLocalizedMessage("help_command", languageCode);
-    }
-
-    @Override
-    public String getAccessLevel() {
-        return super.getAccessLevel();
+        return l10nService.getLocalizedMessage("refresh_command", languageCode);
     }
 }

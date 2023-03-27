@@ -18,9 +18,9 @@ public class AdminInlineKeyboardMarkup {
         this.adminButton = adminButton;
     }
 
-    public InlineKeyboardMarkup getInlineKeyboardMarkup(TelegramUser user) {
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(TelegramUser admin, String languageCode) {
         List<InlineKeyboardButton> row = new ArrayList<>();
-        row.add(adminButton.getInlineKeyboardButton(user));
+        row.add(adminButton.getInlineKeyboardButton(admin, languageCode));
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         markup.setKeyboard(Collections.singletonList(row));
         return markup;

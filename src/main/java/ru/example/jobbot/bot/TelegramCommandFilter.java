@@ -33,29 +33,37 @@ public class TelegramCommandFilter {
     }
 
     public void handleCommandEvent(TelegramBot bot, Update update, TelegramUser clickedUser) {
-        sendMenuCommand(bot, update, clickedUser.getTelegramChatId(), clickedUser.getAccessLevel());
         String commandName = getCommandName(update);
         executeCommand(bot, update, commandName, clickedUser);
+        sendMenuCommand(bot, update, clickedUser);
     }
 
-    private void sendMenuCommand(TelegramBot bot, Update update, Long chatId, String accessLevel) {
+    private void sendMenuCommand(TelegramBot bot, Update update, TelegramUser clickedUser) {
+        String languageCode = getLanguageCode(update);
         if (update.hasMessage()) {
-            if (!cacheService.isChatIdExist(chatId)) {
+            if (!cacheService.isChatIdExist(clickedUser.getTelegramId())) {
                 List<BotCommand> allowedBotCommand = telegramCommands.stream()
-                        .filter(command -> accessLevel.contains(command.getAccessLevel()))
-                        .map(command -> new BotCommand(command.getCommandName(), command.getDescription()))
+                        .filter(command -> clickedUser.getAccessLevel().contains(command.getAccessLevel()))
+                        .map(command -> new BotCommand(command.getCommandName(), command.getDescription(languageCode)))
                         .collect(Collectors.toList());
-                sendBotCommandsForPrivateChat(bot, chatId, allowedBotCommand);
-                cacheService.addChatId(chatId);
+                sendBotCommandsForPrivateChat(bot, clickedUser.getTelegramId(), allowedBotCommand, languageCode);
+                cacheService.addChatId(clickedUser.getTelegramId());
             }
         }
     }
 
-    private void sendBotCommandsForPrivateChat(TelegramBot bot, Long chatId, List<BotCommand> commands) {
+    private String getLanguageCode(Update update) {
+        if (update.hasMessage()) {
+            return update.getMessage().getFrom().getLanguageCode();
+        }
+        return "default";
+    }
+
+    private void sendBotCommandsForPrivateChat(TelegramBot bot, Long chatId, List<BotCommand> commands, String languageCode) {
         SetMyCommands setMyCommands = SetMyCommands.builder()
                 .commands(commands)
                 .scope(new BotCommandScopeChat(String.valueOf(chatId)))
-                .languageCode("ru")
+                .languageCode(languageCode)
                 .build();
         try {
             bot.execute(setMyCommands);

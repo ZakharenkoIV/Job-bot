@@ -2,7 +2,6 @@ package ru.example.jobbot.service.cache;
 
 import ru.example.jobbot.entity.TelegramUser;
 
-import java.util.Map;
 import java.util.Optional;
 
 public interface CacheService {
@@ -27,4 +26,8 @@ public interface CacheService {
     void putSentMessageId(Long chatId, String accessLevel, String commandName, Integer messageId);
 
     boolean containsCommandMassage(Long telegramUserId, String accessLevel, String commandName);
+
+    TelegramUser findRegisteringUser(Long newTelegramUserId);
+
+    void deleteChatByTelegramId(Long chatId);
 }

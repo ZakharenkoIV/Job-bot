@@ -10,7 +10,7 @@ public interface TelegramCommandHandler {
 
     void handleCommand(TelegramBot bot, Update update, TelegramUser user);
 
-    String getDescription();
+    String getDescription(String languageCode);
 
     String getAccessLevel();
 }
