@@ -3,9 +3,16 @@ package ru.example.jobbot.bot.command.handler;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.example.jobbot.bot.AccessLevel;
+import ru.example.jobbot.service.TelegramMessageService;
+import ru.example.jobbot.service.cache.CacheService;
 
 @Component
 public class HelpTelegramCommandHandler extends AbstractTelegramCommandHandler {
+
+    public HelpTelegramCommandHandler(CacheService cacheService, TelegramMessageService messageService) {
+        super("/help", "Помощь", AccessLevel.PUBLIC, cacheService, messageService);
+    }
 
     @Override
     SendMessage createSendMessage(Update update) {
@@ -17,16 +24,16 @@ public class HelpTelegramCommandHandler extends AbstractTelegramCommandHandler {
 
     @Override
     public String getCommandName() {
-        return "/help";
+        return super.getCommandName();
     }
 
     @Override
     public String getDescription() {
-        return "Помощь";
+        return super.getDescription();
     }
 
     @Override
-    public String getScope() {
-        return "public";
+    public String getAccessLevel() {
+        return super.getAccessLevel();
     }
 }

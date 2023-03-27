@@ -4,32 +4,25 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.example.jobbot.bot.AccessLevel;
+import ru.example.jobbot.service.TelegramMessageService;
+import ru.example.jobbot.service.cache.CacheService;
 
 import java.util.StringJoiner;
 
 @Component
 public class MyInfoTelegramCommandHandler extends AbstractTelegramCommandHandler {
+
+    public MyInfoTelegramCommandHandler(CacheService cacheService, TelegramMessageService messageService) {
+        super("/my_info", "Информация о себе", AccessLevel.PRIVATE, cacheService, messageService);
+    }
+
     @Override
     SendMessage createSendMessage(Update update) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
         sendMessage.setText(getInfoAboutUser(update));
         return sendMessage;
-    }
-
-    @Override
-    public String getCommandName() {
-        return "/my_info";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Информация о себе";
-    }
-
-    @Override
-    public String getScope() {
-        return "private";
     }
 
     private String getInfoAboutUser(Update update) {
@@ -41,5 +34,20 @@ public class MyInfoTelegramCommandHandler extends AbstractTelegramCommandHandler
         infoAboutUser.add("Фамилия = " + message.getFrom().getLastName());
         infoAboutUser.add("Код языка = " + message.getFrom().getLanguageCode());
         return infoAboutUser.toString();
+    }
+
+    @Override
+    public String getCommandName() {
+        return super.getCommandName();
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+
+    @Override
+    public String getAccessLevel() {
+        return super.getAccessLevel();
     }
 }

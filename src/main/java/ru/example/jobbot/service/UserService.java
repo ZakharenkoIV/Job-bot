@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.example.jobbot.entity.TelegramUser;
 import ru.example.jobbot.repository.UserRepository;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class UserService {
@@ -23,7 +25,7 @@ public class UserService {
         userRepository.save(telegramUser);
     }
 
-    public TelegramUser getUser(Long telegramId) {
+    public Optional<TelegramUser> getUser(Long telegramId) {
         return userRepository.getUserByTelegramId(telegramId);
     }
 }

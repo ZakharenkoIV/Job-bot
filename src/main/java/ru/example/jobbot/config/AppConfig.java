@@ -11,8 +11,13 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import ru.example.jobbot.bot.keyboard.button.Button;
+import ru.example.jobbot.bot.keyboard.button.handler.ButtonHandler;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -55,5 +60,17 @@ public class AppConfig {
             log.error("Ошибка при создании экземпляра TelegramBotsApi: {}", e.getMessage());
             throw new IllegalStateException("Не удалось создать экземпляр TelegramBotsApi", e);
         }
+    }
+
+    @Bean(name = "buttonHandlersMap")
+    public Map<String, ButtonHandler> buttonHandlersMap(List<Button> buttons, List<ButtonHandler> buttonHandlers) {
+        Map<String, ButtonHandler> buttonHandlersMap = new HashMap<>();
+        for (Button button : buttons) {
+            buttonHandlersMap.put(button.getCallBackText(), buttonHandlers.
+                    stream().
+                    filter(handler -> handler.getButtonHandlerName().equals(button.getCallBackText()))
+                    .findAny().orElseThrow());
+        }
+        return buttonHandlersMap;
     }
 }

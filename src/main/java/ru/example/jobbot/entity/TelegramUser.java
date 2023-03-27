@@ -30,4 +30,11 @@ public class TelegramUser {
 
     @Column(name = "language_code")
     private String languageCode;
+
+    @Column(name = "access_level")
+    private String accessLevel;
+
+    @Column(name = "telegram_chat_id")
+    private Long telegramChatId;
+
 }
